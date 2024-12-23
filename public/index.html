@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Instagram Posts</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
+    .post {
+      margin-bottom: 20px;
+    }
+
+    img {
+      max-width: 100%;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Publicações do Instagram</h1>
+  <div id="posts"></div>
+
+  <script>
+    async function fetchPosts() {
+      try {
+        const response = await fetch('/api/posts');
+        const data = await response.json();
+
+        const postsContainer = document.getElementById('posts');
+        postsContainer.innerHTML = '';
+
+        data.data.forEach(post => {
+          const postDiv = document.createElement('div');
+          postDiv.className = 'post';
+
+          postDiv.innerHTML = `
+            <a href="${post.permalink}" target="_blank">
+              ${post.media_type === 'IMAGE' || post.media_type === 'CAROUSEL_ALBUM'
+              ? `<img src="${post.media_url}" alt="Post Image"/>`
+              : `<video controls src="${post.media_url}"></video>`
+            }
+            </a>
+            <p>${post.caption || 'Sem legenda'}</p>
+          `;
+
+          postsContainer.appendChild(postDiv);
+        });
+      } catch (error) {
+        console.error('Erro ao buscar posts:', error.message);
+      }
+    }
+
+    fetchPosts();
+  </script>
+</body>
+
+</html>
